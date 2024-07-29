@@ -26,7 +26,7 @@ elif main_selected_tab == "SIIC Management":
         '''
         ---
         '''
-        df_daycall = mall_daycall.load_and_prepare_data('pusan_mall_2024-07-22.csv')
+        df_daycall = mall_daycall.load_and_prepare_data('data/mall_daycall/pusan_mall_2024-07-22.csv')
         
         # raw data
         # st.dataframe(df_daycall)
