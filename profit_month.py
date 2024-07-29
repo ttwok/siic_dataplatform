@@ -3,7 +3,7 @@ import streamlit as st
 import plotly.express as px
 import openai
 
-openai.api_key = 'sk-proj-3WRQuj4jRabQ7G4YWmr6T3BlbkFJBEtrpdXgUB75VPCzacx0'
+openai.api_key = 'sk-svcacct-bMnwMD9xWNRBqQuJBYXFT3BlbkFJgNMMno7o2G4Cf5JQRJAD'
 
 def display_profit_page():
     with st.sidebar:
