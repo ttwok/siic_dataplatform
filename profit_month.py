@@ -92,7 +92,8 @@ def display_profit_page():
     if st.button('GPT 분석 실행'):
         st.write('GPT 분석을 시작합니다...')
         gpt_result = asyncio.run(gpt_analysis(gpt_df))
-        
+        st.write(gpt_result)
+
     # 전체 매출에 대한 연도 선택
     years = sorted(profit_df['연도'].unique(), reverse=True)
     selected_total_years = st.multiselect('전체 매출 연도를 선택하세요', years, default=[years[0]])
@@ -126,7 +127,7 @@ def display_profit_page():
 
         with st.expander("전체 데이터 보기"):
             st.dataframe(total_data)
-        st.write(f"{gpt_result}")
+        st.write("text")
 
     def calculate_kpis(data, option, year):
         kpis = {}
