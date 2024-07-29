@@ -1,6 +1,7 @@
 import streamlit as st
 from datetime import datetime
 import mall_daycall  # 모듈을 import
+import demand_forecasting  # 모듈을 import
 
 # 사이드바에 탭 추가
 st.sidebar.title('SIIC Data platform')
