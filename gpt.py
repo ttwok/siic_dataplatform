@@ -2,7 +2,7 @@ import pandas as pd
 import openai
 import streamlit as st
 
-openai.api_key = 'sk-svcacct-bMnwMD9xWNRBqQuJBYXFT3BlbkFJgNMMno7o2G4Cf5JQRJAD'
+openai.api_key = 'sk-svcacct-jOMX0MHNiGnhgzYVOVLnT3BlbkFJdGrsqvnaXY6spS2T2xQx'
 
 # 데이터 파일 경로를 함수 인자로 받도록 수정
 def load_gpt_df(file_path):
