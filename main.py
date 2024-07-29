@@ -18,9 +18,6 @@ elif main_selected_tab == "SIIC Management":
 
     if sub_selected_tab == "SIIC 운영현황":
         st.header("SIIC 운영현황")
-
-    elif sub_selected_tab == "SIIC 운영실적":
-        st.header("SIIC 운영실적")
         st.write("SIIC 콜 처리 현황입니다.")
         st.write(" :green[*raw data*]는 :blue[*csv 파일*]로 다운로드 가능합니다.")
         '''
@@ -49,6 +46,9 @@ elif main_selected_tab == "SIIC Management":
         with c3:
             st.info('업체별 "콜 상세 현황 조회" 입니다.')
             mall_daycall.display_mall_data(df_daycall, mall_name)
+
+    elif sub_selected_tab == "SIIC 운영실적":
+        st.header("SIIC 운영실적")
 
     elif sub_selected_tab == "SIIC 수요예측":
         st.subheader("SIIC 콜 처리량 수요예측")
