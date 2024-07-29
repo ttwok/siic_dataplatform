@@ -7,36 +7,35 @@ openai.api_key = 'sk-svcacct-bMnwMD9xWNRBqQuJBYXFT3BlbkFJgNMMno7o2G4Cf5JQRJAD'
 
 def display_profit_page():
     with st.sidebar:
-    
-    # CSS 스타일 추가
-    st.markdown("""
-        <style>
-        .metric-container {
-            padding: 10px;
-            margin: 5px;
-            text-align: right;
-        }
-        .metric-label {
-            font-size: 20px;
-        }
-        .metric-value {
-            font-size: 25px;
-            font-weight: bold;
-        }
-        .metric-value.negative {
-            color: red;
-        }
-        .metric-delta {
-            font-size: 15px;
-        }
-        .metric-delta.positive {
-            color: green;
-        }
-        .metric-delta.negative {
-            color: red;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+        # CSS 스타일 추가
+        st.markdown("""
+            <style>
+            .metric-container {
+                padding: 10px;
+                margin: 5px;
+                text-align: right;
+            }
+            .metric-label {
+                font-size: 20px;
+            }
+            .metric-value {
+                font-size: 25px;
+                font-weight: bold;
+            }
+            .metric-value.negative {
+                color: red;
+            }
+            .metric-delta {
+                font-size: 15px;
+            }
+            .metric-delta.positive {
+                color: green;
+            }
+            .metric-delta.negative {
+                color: red;
+            }
+            </style>
+            """, unsafe_allow_html=True)
 
     # 데이터 불러오기
     profit_df = pd.read_excel('data/profit_month/profit_month.xlsx')
