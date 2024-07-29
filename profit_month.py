@@ -67,12 +67,14 @@ def display_profit_page():
 
     # GPT에게 데이터프레임 설명 요청 함수
     def ask_gpt(prompt):
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=prompt,
-            max_tokens=1000
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "너는 CS 운영실적을 분석하는 컨설턴트야."},
+                {"role": "user", "content": prompt}
+            ]
         )
-        return response.choices[0].text.strip()
+        return response.choices[0].message['content']
 
     # GPT 데이터 분석 함수
     def gpt_analysis(gpt_df):
