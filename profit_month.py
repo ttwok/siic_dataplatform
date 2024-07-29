@@ -39,8 +39,6 @@ def display_profit_page():
     except Exception as e:
         st.error(f"Error loading data: {e}")
         return
-
-    gpt_df = load_gpt_df('data/profit_month/profit_month.xlsx')  # gpt.py에서 데이터 불러오기
     profit_df['날짜'] = pd.to_datetime(profit_df['날짜'])
     profit_df['연도'] = profit_df['날짜'].dt.year
     profit_df['월'] = profit_df['날짜'].dt.strftime("%Y-%m")
