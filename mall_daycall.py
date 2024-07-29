@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 with st.spinner(text='Data loading...'):
     time.sleep(0.7)
 
-df_daycall = pd.read_csv('/mall_daycall/pusan_mall_2024-07-22.csv')
+df_daycall = pd.read_csv('data/mall_daycall/pusan_mall_2024-07-22.csv')
 df_daycall = df_daycall[df_daycall['총처리호'] != 0]
 
 # '날짜' 컬럼을 datetime 형식으로 변환
