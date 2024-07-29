@@ -51,7 +51,7 @@ elif main_selected_tab == "SIIC Management":
 
     elif sub_selected_tab == "SIIC 운영실적":
         st.header("SIIC 운영실적")
-        profit_month()
+        profit_month.display_profit_page()
 
     elif sub_selected_tab == "SIIC 수요예측":
         st.subheader("SIIC 콜 처리량 수요예측")
