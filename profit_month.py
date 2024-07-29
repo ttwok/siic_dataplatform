@@ -5,8 +5,6 @@ import plotly.express as px
 def display_profit_page():
     # 페이지 설정
     st.set_page_config(layout="wide")
-    with st.sidebar:
-        st.write("hi")
     # CSS 스타일 추가
     st.markdown("""
         <style>
