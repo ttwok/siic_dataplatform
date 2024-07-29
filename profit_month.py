@@ -93,7 +93,7 @@ def display_profit_page():
 
         with st.expander("전체 데이터 보기"):
             st.dataframe(total_data)
-        with st.expander("text")
+        st.write("text")
 
     def calculate_kpis(data, option, year):
         kpis = {}
