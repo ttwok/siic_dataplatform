@@ -94,7 +94,8 @@ def display_profit_page():
     if st.button('GPT 분석 실행'):
         result = gpt(gpt_df)
         st.session_state['gpt_result'] = result
-        st.write(st.session_state['gpt_result'])
+        with st.expander("분석 결과 보기"):
+            st.write(st.session_state['gpt_result'])
 
     # 전체 매출에 대한 연도 선택
     years = sorted(profit_df['연도'].unique(), reverse=True)
