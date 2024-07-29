@@ -287,12 +287,12 @@ def display_profit_page():
             st.plotly_chart(fig)
         '''---'''
 
-# GPT 분석 버튼 추가
-if st.button('GPT 분석 실행'):
-    result = gpt(gpt_df)
-    st.session_state['gpt_result'] = result
-    with st.expander("분석 결과 보기"):
-        st.write(st.session_state['gpt_result'])
+    # GPT 분석 버튼 추가
+    if st.button('GPT 분석 실행'):
+        result = gpt(gpt_df)
+        st.session_state['gpt_result'] = result
+        with st.expander("분석 결과 보기"):
+            st.write(st.session_state['gpt_result'])
         
 # Streamlit 애플리케이션 실행
 if __name__ == "__main__":
