@@ -1,10 +1,14 @@
 import pandas as pd
 import streamlit as st
 import plotly.express as px
+import openai
+
+openai.api_key = 'sk-proj-3WRQuj4jRabQ7G4YWmr6T3BlbkFJBEtrpdXgUB75VPCzacx0'
 
 def display_profit_page():
     with st.sidebar:
         st.write("hi")
+    
     # CSS 스타일 추가
     st.markdown("""
         <style>
@@ -37,6 +41,7 @@ def display_profit_page():
 
     # 데이터 불러오기
     profit_df = pd.read_excel('data/profit_month/profit_month.xlsx')
+    gpt_df = profit_df.copy()
     profit_df['날짜'] = pd.to_datetime(profit_df['날짜'])
     profit_df['연도'] = profit_df['날짜'].dt.year
     profit_df['월'] = profit_df['날짜'].dt.strftime("%Y-%m")
@@ -59,6 +64,34 @@ def display_profit_page():
                 df[f'손익:{option}'] = df[revenue_col] - df[expense_col]
                 result[option] = df[['월', revenue_col, expense_col, f'손익:{option}']]
         return result
+
+    # GPT에게 데이터프레임 설명 요청 함수
+    def ask_gpt(prompt):
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "너는 CS 운영실적을 분석하는 컨설턴트야."},
+                {"role": "user", "content": prompt}
+            ]
+        )
+        return response.choices[0].message['content']
+
+    # GPT 데이터 분석 함수
+    def gpt_analysis(gpt_df):
+        gpt_df['날짜'] = pd.to_datetime(gpt_df['날짜'])
+        gpt_df['년도'] = gpt_df['날짜'].dt.year
+        gpt_df['월'] = gpt_df['날짜'].dt.month
+        gpt_df['날짜'] = pd.to_datetime(gpt_df['날짜']).dt.strftime('%Y-%m')
+        data_analysis = gpt_df[gpt_df['년도'] == 2024]
+        prompt = f"{data_analysis.to_string()} SIIC라는 CS 대행 서비스를 제공하는 업체의 월별 운영실적파일이야. 각 서비스 별로 전월대비 어떠한 변화가 있는지 유의미한 수치 변화가 있는지 분석해줘. 기본적으로 서비스 별로 최근 월이 전월대비 어떠한 변화가 있는지 설명해주고, 각 서비스별로 어떠한 수치적인 변화가 있는지 분석해줘. 또 인사이트가 있다면 제공해줘."
+        response = ask_gpt(prompt)
+        return response
+
+    # GPT 분석 버튼 추가
+    if st.button('GPT 분석 실행'):
+        st.write('GPT 분석을 시작합니다...')
+        gpt_result = gpt_analysis(gpt_df)
+        st.write(gpt_result)
 
     # 전체 매출에 대한 연도 선택
     years = sorted(profit_df['연도'].unique(), reverse=True)
@@ -252,5 +285,8 @@ def display_profit_page():
             fig = generate_quarterly_charts(profit_df, option, selected_detail_years[0])
             st.plotly_chart(fig)
             
-       
         '''---'''
+
+# Streamlit 애플리케이션 실행
+if __name__ == "__main__":
+    display_profit_page()
