@@ -2,9 +2,6 @@
 import streamlit as st
 import plotly.express as px
 import openai
-from gpt import load_gpt_df, gpt_analysis  # gpt.py 파일에서 함수 가져오기
-
-openai.api_key = 'sk-svcacct-bMnwMD9xWNRBqQuJBYXFT3BlbkFJgNMMno7o2G4Cf5JQRJAD'
 
 def display_profit_page():
     with st.sidebar:
@@ -183,8 +180,8 @@ def display_profit_page():
         fig = generate_quarterly_charts(profit_df, '전체', selected_total_years[0])
         st.plotly_chart(fig)
     '''---'''
-    tab1, tab2, tab3 = st.tabs(['서비스별','tab1','tab2'])
-    with tab1 :
+    zz1, zz2, zz3 = st.tabs(['서비스별','tab1','tab2'])
+    with zz1 :
         selected_detail_years = st.multiselect('연도를 선택하세요', years, default=[years[0]])
     
         options = st.multiselect('서비스를 선택하세요', 
