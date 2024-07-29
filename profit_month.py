@@ -2,12 +2,12 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 import openai
+from gpt import load_gpt_df, gpt_analysis  # gpt.py 파일에서 함수 가져오기
 
 openai.api_key = 'sk-svcacct-bMnwMD9xWNRBqQuJBYXFT3BlbkFJgNMMno7o2G4Cf5JQRJAD'
 
 def display_profit_page():
     with st.sidebar:
-        # CSS 스타일 추가
         st.markdown("""
             <style>
             .metric-container {
@@ -38,24 +38,21 @@ def display_profit_page():
             """, unsafe_allow_html=True)
 
     try:
-        # 데이터 불러오기
         profit_df = pd.read_excel('data/profit_month/profit_month.xlsx')
     except Exception as e:
         st.error(f"Error loading data: {e}")
         return
 
-    gpt_df = profit_df.copy()
+    gpt_df = load_gpt_df('data/profit_month/profit_month.xlsx')  # gpt.py에서 데이터 불러오기
     profit_df['날짜'] = pd.to_datetime(profit_df['날짜'])
     profit_df['연도'] = profit_df['날짜'].dt.year
     profit_df['월'] = profit_df['날짜'].dt.strftime("%Y-%m")
     profit_df['분기'] = profit_df['날짜'].dt.to_period('Q').astype(str)
 
-    # 전체 매출, 지출, 손익 계산
     profit_df['매출:전체'] = profit_df[[col for col in profit_df.columns if col.startswith('매출:')]].sum(axis=1)
     profit_df['지출:전체'] = profit_df[[col for col in profit_df.columns if col.startswith('지출:')]].sum(axis=1)
     profit_df['손익:전체'] = profit_df['매출:전체'] - profit_df['지출:전체']
 
-    # 선택한 항목에 따른 매출, 지출, 손익 계산
     def calculate_profit(df, options):
         result = {}
         for option in options:
@@ -68,39 +65,12 @@ def display_profit_page():
                 result[option] = df[['월', revenue_col, expense_col, f'손익:{option}']]
         return result
 
-    def gpt(gpt_df):
-        gpt_df['날짜'] = pd.to_datetime(gpt_df['날짜'])
-        gpt_df['년도'] = gpt_df['날짜'].dt.year
-        gpt_df['월'] = gpt_df['날짜'].dt.month
-        gpt_df['날짜'] = pd.to_datetime(gpt_df['날짜']).dt.strftime('%Y-%m')
-        data_analysis = gpt_df[gpt_df['년도'] == 2024]
-        # 데이터프레임에 대한 설명 요청
-        prompt = f"n{data_analysis.to_string()} SIIC라는 CS 대행 서비스를 제공하는 업체의 월별 운영실적파일이야. 각 서비스 별로 전월대비 어떠한 변화가 있는지 유의미한 수치 변화가 있는지 분석해줘. 기본적으로 서비스 별로 최근 월이 전월대비 어떠한 변화가 있는지 설명해주고, 각 서비스별로 어떠한 수치적인 변화가 있는지 분석해줘. 또 인사이트가 있다면 제공해줘. "
-        response = ask_gpt(prompt)
-        return response
-
-    # GPT에게 데이터프레임 설명 요청 함수
-    def ask_gpt(prompt):
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "너는 CS 운영실적을 분석하는 컨설턴트야."},
-                {"role": "user", "content": prompt}
-            ]
-        )
-        return response.choices[0].message['content']
-
-
-
-    # 전체 매출에 대한 연도 선택
     years = sorted(profit_df['연도'].unique(), reverse=True)
     selected_total_years = st.multiselect('전체 매출 연도를 선택하세요', years, default=[years[0]])
 
-    # 전체 매출, 지출, 손익을 연도별로 필터링하여 시각화
     filtered_total_df = profit_df[profit_df['연도'].isin(selected_total_years)]
     total_data = filtered_total_df[['월', '매출:전체', '지출:전체', '손익:전체']]
 
-    # 전체 차트 출력
     col1, col2 = st.columns([3, 1])
     with col1:
         fig_total = px.bar(total_data, x='월', y=['매출:전체', '지출:전체', '손익:전체'],
@@ -113,14 +83,14 @@ def display_profit_page():
         fig_total.update_layout(
             yaxis=dict(
                 title='금액 (원)',
-                tickformat=',.0f',  # y축 단위 포맷 설정
+                tickformat=',.0f',
                 tickprefix=""
             ),
-            xaxis_title="",  # x축 제목 제거
+            xaxis_title="",
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-            height=550  # 차트 높이를 550으로 설정
+            height=550
         )
-        fig_total.update_xaxes(tickformat="%y-%m", tickfont=dict(size=25))  # x축 글자 크기 변경
+        fig_total.update_xaxes(tickformat="%y-%m", tickfont=dict(size=25))
         st.plotly_chart(fig_total, use_container_width=True)
 
         with st.expander("전체 데이터 보기"):
@@ -133,7 +103,6 @@ def display_profit_page():
         kpis = {}
         current_year_data = data[(data['연도'] == year)].copy()
         
-        # 손익 계산 보정
         if f'손익:{option}' not in current_year_data.columns:
             current_year_data[f'손익:{option}'] = current_year_data[f'매출:{option}'] - current_year_data[f'지출:{option}']
         
@@ -182,7 +151,7 @@ def display_profit_page():
             ),
             xaxis_title="",
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-            height=280  # 분기별 차트 높이 조정
+            height=280
         )
         fig.update_xaxes(tickfont=dict(size=15))
         return fig
@@ -214,19 +183,15 @@ def display_profit_page():
         fig = generate_quarterly_charts(profit_df, '전체', selected_total_years[0])
         st.plotly_chart(fig)
     '''---'''
-    # 세부 항목에 대한 연도 선택
     selected_detail_years = st.multiselect('연도를 선택하세요', years, default=[years[0]])
 
-    # 세부 항목 선택
     options = st.multiselect('서비스를 선택하세요', 
         ['통합상담', 'INC', '스마트팀', '전담상담', '카페24'],
         default=['통합상담', 'INC', '스마트팀', '전담상담', '카페24'])
 
-    # 세부 항목에 대한 데이터 필터링
     filtered_detail_df = profit_df[profit_df['연도'].isin(selected_detail_years)]
     selected_data = calculate_profit(filtered_detail_df, options)
 
-    # 세부 항목 차트 및 데이터프레임 출력
     for i, (option, data) in enumerate(selected_data.items()):
         col1, col2 = st.columns([3, 1])
         with col1:
@@ -251,7 +216,7 @@ def display_profit_page():
                 ),
                 xaxis_title="",
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-                height=500  # 차트 높이를 500으로 설정
+                height=500
             )
             fig.update_xaxes(tickformat="%y-%m", tickfont=dict(size=25))
             st.plotly_chart(fig)
@@ -289,13 +254,11 @@ def display_profit_page():
 
     # GPT 분석 버튼 추가
     if st.button('GPT 분석 실행'):
-        result = gpt(gpt_df)
+        result = gpt_analysis(gpt_df)  # gpt.py에서 함수 호출
         st.session_state['gpt_result'] = result
         with st.expander("분석 결과 보기"):
             st.write(st.session_state['gpt_result'])
-        
+
 # Streamlit 애플리케이션 실행
 if __name__ == "__main__":
     display_profit_page()
-
-
