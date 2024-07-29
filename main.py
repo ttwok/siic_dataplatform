@@ -23,7 +23,6 @@ elif main_selected_tab == "SIIC Management":
 
     if sub_selected_tab == "SIIC 운영현황":
         st.header("SIIC 운영현황")
-        st.write("SIIC 콜 처리 현황입니다.")
         st.write(" :green[*raw data*]는 :blue[*csv 파일*]로 다운로드 가능합니다.")
         '''
         ---
