@@ -2,8 +2,9 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 import openai
+import asyncio
 
-openai.api_key = 'sk-proj-3WRQuj4jRabQ7G4YWmr6T3BlbkFJBEtrpdXgUB75VPCzacx0'
+openai.api_key = 'YOUR_API_KEY'
 
 def display_profit_page():
     with st.sidebar:
@@ -66,8 +67,8 @@ def display_profit_page():
         return result
 
     # GPT에게 데이터프레임 설명 요청 함수
-    def ask_gpt(prompt):
-        response = openai.ChatCompletion.create(
+    async def ask_gpt(prompt):
+        response = await openai.ChatCompletion.acreate(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "너는 CS 운영실적을 분석하는 컨설턴트야."},
@@ -77,22 +78,21 @@ def display_profit_page():
         return response.choices[0].message['content']
 
     # GPT 데이터 분석 함수
-    def gpt_analysis(gpt_df):
+    async def gpt_analysis(gpt_df):
         gpt_df['날짜'] = pd.to_datetime(gpt_df['날짜'])
         gpt_df['년도'] = gpt_df['날짜'].dt.year
         gpt_df['월'] = gpt_df['날짜'].dt.month
         gpt_df['날짜'] = pd.to_datetime(gpt_df['날짜']).dt.strftime('%Y-%m')
         data_analysis = gpt_df[gpt_df['년도'] == 2024]
         prompt = f"{data_analysis.to_string()} SIIC라는 CS 대행 서비스를 제공하는 업체의 월별 운영실적파일이야. 각 서비스 별로 전월대비 어떠한 변화가 있는지 유의미한 수치 변화가 있는지 분석해줘. 기본적으로 서비스 별로 최근 월이 전월대비 어떠한 변화가 있는지 설명해주고, 각 서비스별로 어떠한 수치적인 변화가 있는지 분석해줘. 또 인사이트가 있다면 제공해줘."
-        response = ask_gpt(prompt)
+        response = await ask_gpt(prompt)
         return response
 
     # GPT 분석 버튼 추가
     if st.button('GPT 분석 실행'):
         st.write('GPT 분석을 시작합니다...')
-        gpt_result = gpt_analysis(gpt_df)
-        st.write(gpt_result)
-
+        gpt_result = asyncio.run(gpt_analysis(gpt_df))
+        
     # 전체 매출에 대한 연도 선택
     years = sorted(profit_df['연도'].unique(), reverse=True)
     selected_total_years = st.multiselect('전체 매출 연도를 선택하세요', years, default=[years[0]])
@@ -126,7 +126,7 @@ def display_profit_page():
 
         with st.expander("전체 데이터 보기"):
             st.dataframe(total_data)
-        st.write("text")
+        st.write(f"{gpt_result}")
 
     def calculate_kpis(data, option, year):
         kpis = {}
