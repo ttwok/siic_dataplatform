@@ -5,7 +5,7 @@ import demand_forecasting  # 모듈을 import
 import profit_month  # 모듈을 import
 
 # 페이지 설정
-# st.set_page_config(layout="wide")
+st.set_page_config(layout="wide")
 
 # 사이드바에 탭 추가
 st.sidebar.title('SIIC Data platform')
