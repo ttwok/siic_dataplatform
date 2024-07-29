@@ -1,4 +1,4 @@
-import pandas as pd
+     import pandas as pd
 import streamlit as st
 import plotly.express as px
 import openai
@@ -183,74 +183,76 @@ def display_profit_page():
         fig = generate_quarterly_charts(profit_df, '전체', selected_total_years[0])
         st.plotly_chart(fig)
     '''---'''
-    selected_detail_years = st.multiselect('연도를 선택하세요', years, default=[years[0]])
-
-    options = st.multiselect('서비스를 선택하세요', 
-        ['통합상담', 'INC', '스마트팀', '전담상담', '카페24'],
-        default=['통합상담', 'INC', '스마트팀', '전담상담', '카페24'])
-
-    filtered_detail_df = profit_df[profit_df['연도'].isin(selected_detail_years)]
-    selected_data = calculate_profit(filtered_detail_df, options)
-
-    for i, (option, data) in enumerate(selected_data.items()):
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            data = data.rename(columns={
-                f'매출:{option}': '매출',
-                f'지출:{option}': '지출',
-                f'손익:{option}': '손익'
-            })
-            
-            fig = px.bar(data, x='월', y=['매출', '지출', '손익'],
-                         barmode='group', title=f'{option} 매출, 지출, 손익',
-                         color_discrete_map={
-                             '매출': 'blue',
-                             '지출': 'darkblue',
-                             '손익': 'red'
-                         })
-            fig.update_layout(
-                yaxis=dict(
-                    title='금액 (원)',
-                    tickformat=',.0f',
-                    tickprefix=""
-                ),
-                xaxis_title="",
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-                height=500
-            )
-            fig.update_xaxes(tickformat="%y-%m", tickfont=dict(size=25))
-            st.plotly_chart(fig)
-            
-            with st.expander(f"{option} 데이터 보기"):
-                st.dataframe(data)
-
-        with col2:
-            kpis = calculate_kpis(profit_df, option, selected_detail_years[0])
-            kpi_keys = list(kpis.keys())
-            for j in range(0, len(kpi_keys), 2):
-                cols = st.columns(2)
-                for k, kpi_key in enumerate(kpi_keys[j:j+2]):
-                    value = kpis[kpi_key]
-                    if isinstance(value, tuple):
-                        value, delta = value
-                        delta_class = "positive" if delta >= 0 else "negative"
-                        delta_text = f"▲ {delta:,}" if delta >= 0 else f"▼ {delta:,}"
-                        delta_html = f"<div class='metric-delta {delta_class}'>{delta_text}</div>"
-                    else:
-                        delta_html = ""
-                    value_class = "negative" if value < 0 else ""
-                    with cols[k]:
-                        st.markdown(f"""
-                            <div class="metric-container">
-                                <div class="metric-label">{kpi_key}</div>
-                                <div class="metric-value {value_class}">{value:,}</div>
-                                {delta_html}
-                            </div>
-                            """, unsafe_allow_html=True)
-            
-            fig = generate_quarterly_charts(profit_df, option, selected_detail_years[0])
-            st.plotly_chart(fig)
-        '''---'''
+    tab1, tab2, tab3 = st.tabs(['서비스별','tab1','tab2'])
+    with tab1 :
+        selected_detail_years = st.multiselect('연도를 선택하세요', years, default=[years[0]])
+    
+        options = st.multiselect('서비스를 선택하세요', 
+            ['통합상담', 'INC', '스마트팀', '전담상담', '카페24'],
+            default=['통합상담', 'INC', '스마트팀', '전담상담', '카페24'])
+    
+        filtered_detail_df = profit_df[profit_df['연도'].isin(selected_detail_years)]
+        selected_data = calculate_profit(filtered_detail_df, options)
+    
+        for i, (option, data) in enumerate(selected_data.items()):
+            col1, col2 = st.columns([3, 1])
+            with col1:
+                data = data.rename(columns={
+                    f'매출:{option}': '매출',
+                    f'지출:{option}': '지출',
+                    f'손익:{option}': '손익'
+                })
+                
+                fig = px.bar(data, x='월', y=['매출', '지출', '손익'],
+                             barmode='group', title=f'{option} 매출, 지출, 손익',
+                             color_discrete_map={
+                                 '매출': 'blue',
+                                 '지출': 'darkblue',
+                                 '손익': 'red'
+                             })
+                fig.update_layout(
+                    yaxis=dict(
+                        title='금액 (원)',
+                        tickformat=',.0f',
+                        tickprefix=""
+                    ),
+                    xaxis_title="",
+                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                    height=500
+                )
+                fig.update_xaxes(tickformat="%y-%m", tickfont=dict(size=25))
+                st.plotly_chart(fig)
+                
+                with st.expander(f"{option} 데이터 보기"):
+                    st.dataframe(data)
+    
+            with col2:
+                kpis = calculate_kpis(profit_df, option, selected_detail_years[0])
+                kpi_keys = list(kpis.keys())
+                for j in range(0, len(kpi_keys), 2):
+                    cols = st.columns(2)
+                    for k, kpi_key in enumerate(kpi_keys[j:j+2]):
+                        value = kpis[kpi_key]
+                        if isinstance(value, tuple):
+                            value, delta = value
+                            delta_class = "positive" if delta >= 0 else "negative"
+                            delta_text = f"▲ {delta:,}" if delta >= 0 else f"▼ {delta:,}"
+                            delta_html = f"<div class='metric-delta {delta_class}'>{delta_text}</div>"
+                        else:
+                            delta_html = ""
+                        value_class = "negative" if value < 0 else ""
+                        with cols[k]:
+                            st.markdown(f"""
+                                <div class="metric-container">
+                                    <div class="metric-label">{kpi_key}</div>
+                                    <div class="metric-value {value_class}">{value:,}</div>
+                                    {delta_html}
+                                </div>
+                                """, unsafe_allow_html=True)
+                
+                fig = generate_quarterly_charts(profit_df, option, selected_detail_years[0])
+                st.plotly_chart(fig)
+            '''---'''
 
     # # GPT 분석 버튼 추가
     # if st.button('GPT 분석 실행'):
