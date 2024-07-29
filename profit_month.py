@@ -7,7 +7,6 @@ openai.api_key = 'sk-svcacct-bMnwMD9xWNRBqQuJBYXFT3BlbkFJgNMMno7o2G4Cf5JQRJAD'
 
 def display_profit_page():
     with st.sidebar:
-        st.write("hi")
     
     # CSS 스타일 추가
     st.markdown("""
