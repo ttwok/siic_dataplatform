@@ -251,5 +251,5 @@ def display_profit_page():
             fig = generate_quarterly_charts(profit_df, option, selected_detail_years[0])
             st.plotly_chart(fig)
             
-        memo = st.text_area(f'{option} 메모를 작성하세요:', key=f'memo_{option}')
+       
         '''---'''
