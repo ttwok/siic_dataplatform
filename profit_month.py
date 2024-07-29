@@ -67,14 +67,12 @@ def display_profit_page():
 
     # GPT에게 데이터프레임 설명 요청 함수
     def ask_gpt(prompt):
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "너는 CS 운영실적을 분석하는 컨설턴트야."},
-                {"role": "user", "content": prompt}
-            ]
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=prompt,
+            max_tokens=1000
         )
-        return response.choices[0].message['content']
+        return response.choices[0].text.strip()
 
     # GPT 데이터 분석 함수
     def gpt_analysis(gpt_df):
@@ -89,9 +87,7 @@ def display_profit_page():
 
     # GPT 분석 버튼 추가
     if st.button('GPT 분석 실행'):
-        st.write('GPT 분석을 시작합니다...')
-        gpt_result = gpt_analysis(gpt_df)
-        st.write(gpt_result)
+        st.session_state['gpt_result'] = gpt_analysis(gpt_df)
 
     # 전체 매출에 대한 연도 선택
     years = sorted(profit_df['연도'].unique(), reverse=True)
@@ -126,7 +122,10 @@ def display_profit_page():
 
         with st.expander("전체 데이터 보기"):
             st.dataframe(total_data)
+        
         st.write("text")
+        if 'gpt_result' in st.session_state:
+            st.write(st.session_state['gpt_result'])
 
     def calculate_kpis(data, option, year):
         kpis = {}
