@@ -90,6 +90,7 @@ def display_profit_page():
         )
         return response.choices[0].message['content']
 
+    # GPT 분석 버튼 추가
     if st.button('GPT 분석 실행'):
         result = gpt(gpt_df)
         st.session_state['gpt_result'] = result
